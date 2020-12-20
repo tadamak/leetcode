@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "pry"
+
+def initialized_ids
+  content = File.read("./src/problem/mod.rs")
+  /p(\d{4})_/.match(content).captures
+end
+
+id = ARGV[0]
+
+if id.nil?
+  puts "please specify id"
+  return
+end
+
+if initialized_ids.include?(id)
+  puts "#{id} has already initialized"
+  return
+end
+
+require_relative "../fetcher"
+
+problem = Fetcher.run(id)
+rust_code = problem[:code_definition].find { |x| x[:value] == "rust" }
